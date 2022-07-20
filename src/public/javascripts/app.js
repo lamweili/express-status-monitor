@@ -13,22 +13,22 @@ Chart.defaults.global.elements.line.backgroundColor = 'rgba(0,0,0,0)';
 Chart.defaults.global.elements.line.borderColor = 'rgba(0,0,0,0.9)';
 Chart.defaults.global.elements.line.borderWidth = 2;
 
-var socket = io(location.protocol + '//' + location.hostname + ':' + (port || location.port), {
+const socket = io(location.protocol + '//' + location.hostname + ':' + (port || location.port), {
     path: socketPath,
     transports: ["websocket"]
 });
-var defaultSpan = 0;
-var spans = [];
-var statusCodesColors = ['#75D701', '#47b8e0', '#ffc952', '#E53A40'];
+const defaultSpan = 0;
+const spans = [];
+const statusCodesColors = ['#75D701', '#47b8e0', '#ffc952', '#E53A40'];
 
-var defaultDataset = {
+const defaultDataset = {
     label: '',
     data: [],
     lineTension: 0.2,
     pointRadius: 0,
 };
 
-var defaultOptions = {
+const defaultOptions = {
     scales: {
         yAxes: [
             {
@@ -57,7 +57,7 @@ var defaultOptions = {
     animation: false,
 };
 
-var createChart = function (ctx, dataset) {
+const createChart = function (ctx, dataset) {
     return new Chart(ctx, {
         type: 'line',
         data: {
@@ -68,43 +68,43 @@ var createChart = function (ctx, dataset) {
     });
 };
 
-var addTimestamp = function (point) {
+const addTimestamp = function (point) {
     return point.timestamp;
 };
 
-var cpuDataset = [Object.create(defaultDataset)];
-var memDataset = [Object.create(defaultDataset)];
-var loadDataset = [Object.create(defaultDataset)];
-var heapDataset = [Object.create(defaultDataset)];
-var eventLoopDataset = [Object.create(defaultDataset)];
-var responseTimeDataset = [Object.create(defaultDataset)];
-var rpsDataset = [Object.create(defaultDataset)];
+const cpuDataset = [Object.create(defaultDataset)];
+const memDataset = [Object.create(defaultDataset)];
+const loadDataset = [Object.create(defaultDataset)];
+const heapDataset = [Object.create(defaultDataset)];
+const eventLoopDataset = [Object.create(defaultDataset)];
+const responseTimeDataset = [Object.create(defaultDataset)];
+const rpsDataset = [Object.create(defaultDataset)];
 
-var cpuStat = document.getElementById('cpuStat');
-var memStat = document.getElementById('memStat');
-var loadStat = document.getElementById('loadStat');
-var heapStat = document.getElementById('heapStat');
-var eventLoopStat = document.getElementById('eventLoopStat');
-var responseTimeStat = document.getElementById('responseTimeStat');
-var rpsStat = document.getElementById('rpsStat');
+const cpuStat = document.getElementById('cpuStat');
+const memStat = document.getElementById('memStat');
+const loadStat = document.getElementById('loadStat');
+const heapStat = document.getElementById('heapStat');
+const eventLoopStat = document.getElementById('eventLoopStat');
+const responseTimeStat = document.getElementById('responseTimeStat');
+const rpsStat = document.getElementById('rpsStat');
 
-var cpuChartCtx = document.getElementById('cpuChart');
-var memChartCtx = document.getElementById('memChart');
-var loadChartCtx = document.getElementById('loadChart');
-var heapChartCtx = document.getElementById('heapChart');
-var eventLoopChartCtx = document.getElementById('eventLoopChart');
-var responseTimeChartCtx = document.getElementById('responseTimeChart');
-var rpsChartCtx = document.getElementById('rpsChart');
-var statusCodesChartCtx = document.getElementById('statusCodesChart');
+const cpuChartCtx = document.getElementById('cpuChart');
+const memChartCtx = document.getElementById('memChart');
+const loadChartCtx = document.getElementById('loadChart');
+const heapChartCtx = document.getElementById('heapChart');
+const eventLoopChartCtx = document.getElementById('eventLoopChart');
+const responseTimeChartCtx = document.getElementById('responseTimeChart');
+const rpsChartCtx = document.getElementById('rpsChart');
+const statusCodesChartCtx = document.getElementById('statusCodesChart');
 
-var cpuChart = createChart(cpuChartCtx, cpuDataset);
-var memChart = createChart(memChartCtx, memDataset);
-var heapChart = createChart(heapChartCtx, heapDataset);
-var eventLoopChart = createChart(eventLoopChartCtx, eventLoopDataset);
-var loadChart = createChart(loadChartCtx, loadDataset);
-var responseTimeChart = createChart(responseTimeChartCtx, responseTimeDataset);
-var rpsChart = createChart(rpsChartCtx, rpsDataset);
-var statusCodesChart = new Chart(statusCodesChartCtx, {
+const cpuChart = createChart(cpuChartCtx, cpuDataset);
+const memChart = createChart(memChartCtx, memDataset);
+const heapChart = createChart(heapChartCtx, heapDataset);
+const eventLoopChart = createChart(eventLoopChartCtx, eventLoopDataset);
+const loadChart = createChart(loadChartCtx, loadDataset);
+const responseTimeChart = createChart(responseTimeChartCtx, responseTimeDataset);
+const rpsChart = createChart(rpsChartCtx, rpsDataset);
+const statusCodesChart = new Chart(statusCodesChartCtx, {
     type: 'line',
     data: {
         labels: [],
@@ -118,11 +118,11 @@ var statusCodesChart = new Chart(statusCodesChartCtx, {
     options: defaultOptions,
 });
 
-statusCodesChart.data.datasets.forEach(function (dataset, index) {
+statusCodesChart.data.datasets.forEach((dataset, index) => {
     dataset.borderColor = statusCodesColors[index];
 });
 
-var charts = [
+const charts = [
     cpuChart,
     memChart,
     loadChart,
@@ -133,33 +133,33 @@ var charts = [
     eventLoopChart,
 ];
 
-var onSpanChange = function (e) {
+const onSpanChange = (e) => {
     e.target.classList.add('active');
     defaultSpan = parseInt(e.target.id, 10);
 
-    var otherSpans = document.getElementsByTagName('span');
+    const otherSpans = document.getElementsByTagName('span');
 
-    for (var i = 0; i < otherSpans.length; i++) {
+    for (let i = 0; i < otherSpans.length; i++) {
         if (otherSpans[i] !== e.target) otherSpans[i].classList.remove('active');
     }
 
     socket.emit('esm_change');
 };
 
-socket.on('esm_start', function (data) {
+socket.on('esm_start', (data) => {
     // Remove last element of Array because it contains malformed responses data.
     // To keep consistency we also remove os data.
     data[defaultSpan].responses.pop();
     data[defaultSpan].os.pop();
 
-    var lastOsMetric = data[defaultSpan].os[data[defaultSpan].os.length - 1];
+    const lastOsMetric = data[defaultSpan].os[data[defaultSpan].os.length - 1];
 
     cpuStat.textContent = '0.0%';
     if (lastOsMetric) {
         cpuStat.textContent = lastOsMetric.cpu.toFixed(1) + '%';
     }
 
-    cpuChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
+    cpuChart.data.datasets[0].data = data[defaultSpan].os.map((point) => {
         return point.cpu;
     });
     cpuChart.data.labels = data[defaultSpan].os.map(addTimestamp);
@@ -169,7 +169,7 @@ socket.on('esm_start', function (data) {
         memStat.textContent = lastOsMetric.memory.toFixed(1) + 'MB';
     }
 
-    memChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
+    memChart.data.datasets[0].data = data[defaultSpan].os.map((point) => {
         return point.memory;
     });
     memChart.data.labels = data[defaultSpan].os.map(addTimestamp);
@@ -179,17 +179,17 @@ socket.on('esm_start', function (data) {
         loadStat.textContent = lastOsMetric.load[defaultSpan].toFixed(2);
     }
 
-    loadChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
+    loadChart.data.datasets[0].data = data[defaultSpan].os.map((point) => {
         return point.load[0];
     });
     loadChart.data.labels = data[defaultSpan].os.map(addTimestamp);
 
-    heapChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
+    heapChart.data.datasets[0].data = data[defaultSpan].os.map((point) => {
         return point.heap.used_heap_size / 1024 / 1024;
     });
     heapChart.data.labels = data[defaultSpan].os.map(addTimestamp);
 
-    eventLoopChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
+    eventLoopChart.data.datasets[0].data = data[defaultSpan].os.map((point) =>{
         if (point.loop) {
             return point.loop.sum;
         }
@@ -197,43 +197,43 @@ socket.on('esm_start', function (data) {
     });
     eventLoopChart.data.labels = data[defaultSpan].os.map(addTimestamp);
 
-    var lastResponseMetric = data[defaultSpan].responses[data[defaultSpan].responses.length - 1];
+    const lastResponseMetric = data[defaultSpan].responses[data[defaultSpan].responses.length - 1];
 
     responseTimeStat.textContent = '0.00ms';
     if (lastResponseMetric) {
         responseTimeStat.textContent = lastResponseMetric.mean.toFixed(2) + 'ms';
     }
 
-    responseTimeChart.data.datasets[0].data = data[defaultSpan].responses.map(function (point) {
+    responseTimeChart.data.datasets[0].data = data[defaultSpan].responses.map((point) => {
         return point.mean;
     });
     responseTimeChart.data.labels = data[defaultSpan].responses.map(addTimestamp);
 
-    for (var i = 0; i < 4; i++) {
-        statusCodesChart.data.datasets[i].data = data[defaultSpan].responses.map(function (point) {
+    for (let i = 0; i < 4; i++) {
+        statusCodesChart.data.datasets[i].data = data[defaultSpan].responses.map((point) => {
             return point[i + 2];
         });
     }
     statusCodesChart.data.labels = data[defaultSpan].responses.map(addTimestamp);
 
     if (data[defaultSpan].responses.length >= 2) {
-        var deltaTime =
+        let deltaTime =
             lastResponseMetric.timestamp -
             data[defaultSpan].responses[data[defaultSpan].responses.length - 2].timestamp;
 
         if (deltaTime < 1) deltaTime = 1000;
         rpsStat.textContent = ((lastResponseMetric.count / deltaTime) * 1000).toFixed(2);
-        rpsChart.data.datasets[0].data = data[defaultSpan].responses.map(function (point) {
+        rpsChart.data.datasets[0].data = data[defaultSpan].responses.map((point) => {
             return (point.count / deltaTime) * 1000;
         });
         rpsChart.data.labels = data[defaultSpan].responses.map(addTimestamp);
     }
 
-    charts.forEach(function (chart) {
+    charts.forEach((chart) => {
         chart.update();
     });
 
-    var spanControls = document.getElementById('span-controls');
+    const spanControls = document.getElementById('span-controls');
 
     if (data.length !== spans.length) {
         data.forEach(function (span, index) {
@@ -242,8 +242,8 @@ socket.on('esm_start', function (data) {
                 interval: span.interval,
             });
 
-            var spanNode = document.createElement('span');
-            var textNode = document.createTextNode((span.retention * span.interval) / 60 + 'M'); // eslint-disable-line
+            const spanNode = document.createElement('span');
+            const textNode = document.createTextNode((span.retention * span.interval) / 60 + 'M'); // eslint-disable-line
 
             spanNode.appendChild(textNode);
             spanNode.setAttribute('id', index);
@@ -254,15 +254,15 @@ socket.on('esm_start', function (data) {
     }
 });
 
-socket.on('esm_stats', function (data) {
+socket.on('esm_stats', (data) => {
     console.log(data);
 
     if (
         data.retention === spans[defaultSpan].retention &&
         data.interval === spans[defaultSpan].interval
     ) {
-        var os = data.os;
-        var responses = data.responses;
+        const os = data.os;
+        const responses = data.responses;
 
         cpuStat.textContent = '0.0%';
         if (os) {
@@ -307,7 +307,7 @@ socket.on('esm_stats', function (data) {
         }
 
         if (responses) {
-            var deltaTime = responses.timestamp - rpsChart.data.labels[rpsChart.data.labels.length - 1];
+            let deltaTime = responses.timestamp - rpsChart.data.labels[rpsChart.data.labels.length - 1];
 
             if (deltaTime < 1) deltaTime = 1000;
             rpsStat.textContent = ((responses.count / deltaTime) * 1000).toFixed(2);
@@ -322,9 +322,9 @@ socket.on('esm_stats', function (data) {
             statusCodesChart.data.labels.push(data.responses.timestamp);
         }
 
-        charts.forEach(function (chart) {
+        charts.forEach((chart) => {
             if (spans[defaultSpan].retention < chart.data.labels.length) {
-                chart.data.datasets.forEach(function (dataset) {
+                chart.data.datasets.forEach((dataset) => {
                     dataset.data.shift();
                 });
 
