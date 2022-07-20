@@ -65,7 +65,7 @@ const middlewareWrapper = config => {
     });
     const staticCdnPath = path.join(data.path, 'javascripts/libs');
 
-    if (req.path.replace(/\/$/, '') === validatedConfig.path.replace(/\/$/, '')) {
+    if (validatedConfig.path!='' && req.path.replace(/\/$/, '') === validatedConfig.path.replace(/\/$/, '')) {
       renderResults(req, res);
     } else if (req.path.startsWith(staticCdnPath)) {
       req.url = req.url.replace(staticCdnPath, '');
