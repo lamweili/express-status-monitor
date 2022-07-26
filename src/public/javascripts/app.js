@@ -84,7 +84,6 @@ var cpuStat = document.getElementById('cpuStat');
 var memStat = document.getElementById('memStat');
 var loadStat = document.getElementById('loadStat');
 var heapStat = document.getElementById('heapStat');
-var eventLoopStat = document.getElementById('eventLoopStat');
 var responseTimeStat = document.getElementById('responseTimeStat');
 var rpsStat = document.getElementById('rpsStat');
 
@@ -92,7 +91,6 @@ var cpuChartCtx = document.getElementById('cpuChart');
 var memChartCtx = document.getElementById('memChart');
 var loadChartCtx = document.getElementById('loadChart');
 var heapChartCtx = document.getElementById('heapChart');
-var eventLoopChartCtx = document.getElementById('eventLoopChart');
 var responseTimeChartCtx = document.getElementById('responseTimeChart');
 var rpsChartCtx = document.getElementById('rpsChart');
 var statusCodesChartCtx = document.getElementById('statusCodesChart');
@@ -100,7 +98,6 @@ var statusCodesChartCtx = document.getElementById('statusCodesChart');
 var cpuChart = createChart(cpuChartCtx, cpuDataset);
 var memChart = createChart(memChartCtx, memDataset);
 var heapChart = createChart(heapChartCtx, heapDataset);
-var eventLoopChart = createChart(eventLoopChartCtx, eventLoopDataset);
 var loadChart = createChart(loadChartCtx, loadDataset);
 var responseTimeChart = createChart(responseTimeChartCtx, responseTimeDataset);
 var rpsChart = createChart(rpsChartCtx, rpsDataset);
@@ -129,8 +126,7 @@ var charts = [
     responseTimeChart,
     rpsChart,
     statusCodesChart,
-    heapChart,
-    eventLoopChart,
+    heapChart
 ];
 
 var onSpanChange = function (e) {
@@ -188,14 +184,6 @@ socket.on('esm_start', function (data) {
         return point.heap.used_heap_size / 1024 / 1024;
     });
     heapChart.data.labels = data[defaultSpan].os.map(addTimestamp);
-
-    eventLoopChart.data.datasets[0].data = data[defaultSpan].os.map(function (point) {
-        if (point.loop) {
-            return point.loop.sum;
-        }
-        return 0;
-    });
-    eventLoopChart.data.labels = data[defaultSpan].os.map(addTimestamp);
 
     var lastResponseMetric = data[defaultSpan].responses[data[defaultSpan].responses.length - 1];
 
@@ -290,13 +278,6 @@ socket.on('esm_stats', function (data) {
             heapStat.textContent = (os.heap.used_heap_size / 1024 / 1024).toFixed(1) + 'MB';
             heapChart.data.datasets[0].data.push(os.heap.used_heap_size / 1024 / 1024);
             heapChart.data.labels.push(os.timestamp);
-        }
-
-        eventLoopStat.textContent = '0';
-        if (os && os.loop) {
-            eventLoopStat.textContent = os.loop.sum.toFixed(2) + 'ms';
-            eventLoopChart.data.datasets[0].data.push(os.loop.sum);
-            eventLoopChart.data.labels.push(os.timestamp);
         }
 
         responseTimeStat.textContent = '0.00ms';
