@@ -76,9 +76,6 @@
     "serve-static": "^1.15.0",
     "socket.io": "^4.4.1"
   },
-  "optionalDependencies": {
-    "event-loop-stats": "1.2.0"
-  },
   "scripts": {
     "test-ci": "mocha --recursive",
     "test": "mocha --recursive --watch",

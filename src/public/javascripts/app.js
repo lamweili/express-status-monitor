@@ -106,6 +106,37 @@ const loadChart = createChart(loadChartCtx, loadDataset);
 const responseTimeChart = createChart(responseTimeChartCtx, responseTimeDataset);
 const rpsChart = createChart(rpsChartCtx, rpsDataset);
 const statusCodesChart = new Chart(statusCodesChartCtx, {
+=======
+var cpuDataset = [Object.create(defaultDataset)];
+var memDataset = [Object.create(defaultDataset)];
+var loadDataset = [Object.create(defaultDataset)];
+var heapDataset = [Object.create(defaultDataset)];
+var eventLoopDataset = [Object.create(defaultDataset)];
+var responseTimeDataset = [Object.create(defaultDataset)];
+var rpsDataset = [Object.create(defaultDataset)];
+
+var cpuStat = document.getElementById('cpuStat');
+var memStat = document.getElementById('memStat');
+var loadStat = document.getElementById('loadStat');
+var heapStat = document.getElementById('heapStat');
+var responseTimeStat = document.getElementById('responseTimeStat');
+var rpsStat = document.getElementById('rpsStat');
+
+var cpuChartCtx = document.getElementById('cpuChart');
+var memChartCtx = document.getElementById('memChart');
+var loadChartCtx = document.getElementById('loadChart');
+var heapChartCtx = document.getElementById('heapChart');
+var responseTimeChartCtx = document.getElementById('responseTimeChart');
+var rpsChartCtx = document.getElementById('rpsChart');
+var statusCodesChartCtx = document.getElementById('statusCodesChart');
+
+var cpuChart = createChart(cpuChartCtx, cpuDataset);
+var memChart = createChart(memChartCtx, memDataset);
+var heapChart = createChart(heapChartCtx, heapDataset);
+var loadChart = createChart(loadChartCtx, loadDataset);
+var responseTimeChart = createChart(responseTimeChartCtx, responseTimeDataset);
+var rpsChart = createChart(rpsChartCtx, rpsDataset);
+var statusCodesChart = new Chart(statusCodesChartCtx, {
     type: 'line',
     data: {
         labels: [],
@@ -130,8 +161,7 @@ const charts = [
     responseTimeChart,
     rpsChart,
     statusCodesChart,
-    heapChart,
-    eventLoopChart,
+    heapChart
 ];
 
 const onSpanChange = (e) => {
@@ -291,13 +321,6 @@ socket.on('esm_stats', (data) => {
             heapStat.textContent = (os.heap.used_heap_size / 1024 / 1024).toFixed(1) + 'MB';
             heapChart.data.datasets[0].data.push(os.heap.used_heap_size / 1024 / 1024);
             heapChart.data.labels.push(os.timestamp);
-        }
-
-        eventLoopStat.textContent = '0';
-        if (os && os.loop) {
-            eventLoopStat.textContent = os.loop.sum.toFixed(2) + 'ms';
-            eventLoopChart.data.datasets[0].data.push(os.loop.sum);
-            eventLoopChart.data.labels.push(os.timestamp);
         }
 
         responseTimeStat.textContent = '0.00ms';
